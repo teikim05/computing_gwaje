@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>강의실 대여 시스템 - 로그인</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="toast-container"></div>
+
+  <div class="login-page">
+    <div class="login-logo">
+      <span class="logo-icon">🏛️</span>
+      <h1>강의실 <span>대여</span> 시스템</h1>
+      <p>학사정보 및 회원가입 계정으로 자유롭게 이용하세요</p>
+    </div>
+
+    <div class="login-card">
+      <h2>로그인</h2>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="student-id">
+            학번 (ID) <span class="required">*</span>
+          </label>
+          <input type="text" id="student-id" class="form-input" placeholder="학번 또는 ID를 입력하세요" maxlength="20"
+            autocomplete="username" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">
+            비밀번호 <span class="required">*</span>
+          </label>
+          <div style="position:relative">
+            <input type="password" id="password" class="form-input" placeholder="비밀번호를 입력하세요"
+              autocomplete="current-password" required>
+            <button type="button" id="toggle-pw"
+              style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--text-light);background:none;border:none;cursor:pointer">👁</button>
+          </div>
+        </div>
+
+        <div id="login-error" class="alert alert-danger" style="display:none">
+          <span class="alert-icon">⚠️</span>
+          <span id="login-error-msg"></span>
+        </div>
+
+        <div class="form-group" style="margin-top:8px">
+          <div class="alert alert-info" style="font-size:var(--font-xs)">
+            <span class="alert-icon">ℹ️</span>
+            <span>타인의 계정 도용은 금지됩니다.<br>계정이 없다면 아래의 [회원가입] 버튼으로 즉시 생성할 수 있습니다.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">
+          🔐 로그인
+        </button>
+
+        <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;padding:0 4px;">
+          <a href="#" onclick="alert('관리자에게 문의해주세요 (조교실 연락처: 02-1234-5678)');return false;"
+            style="font-size:var(--font-sm);color:var(--text-sub);text-decoration:underline;">ID/PW 찾기</a>
+          <a href="pages/register.html"
+            style="font-size:var(--font-sm);color:var(--primary);font-weight:700;text-decoration:underline;">회원가입
+            바로가기</a>
+        </div>
+
+        <a href="pages/register.html" class="btn btn-outline btn-full btn-lg"
+          style="margin-top:14px;display:flex;text-align:center;">
+          👤 회원가입
+        </a>
+      </form>
+
+      <!-- 테스트용 계정 안내 -->
+      <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:var(--radius-sm);">
+        <p style="font-size:var(--font-xs);color:var(--text-sub);font-weight:700;margin-bottom:8px;">📋 기존 테스트 계정</p>
+        <p style="font-size:var(--font-xs);color:var(--text-light);">학생: 20210001 / 1234</p>
+        <p style="font-size:var(--font-xs);color:var(--text-light);">관리자: 20200050 / admin1234</p>
+      </div>
+    </div>
+
+    <div class="login-footer">
+      <p>© 2026 강의실 대여 시스템 | 보안 연결</p>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script>
+    // 이미 로그인 상태면 홈으로
+    if (Session.isLoggedIn()) {
+      window.location.href = 'pages/home.html';
+    }
+
+    // 비밀번호 토글
+    document.getElementById('toggle-pw').addEventListener('click', function () {
+      const pw = document.getElementById('password');
+      if (pw.type === 'password') { pw.type = 'text'; this.textContent = '🙈'; }
+      else { pw.type = 'password'; this.textContent = '👁'; }
+    });
+
+    // 로그인 폼
+    document.getElementById('login-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const student_id = document.getElementById('student-id').value.trim();
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('login-error');
+      const errorMsg = document.getElementById('login-error-msg');
+      const btn = document.getElementById('login-btn');
+
+      if (!student_id || !password) {
+        errorMsg.textContent = '학번과 비밀번호를 모두 입력하세요.';
+        errorDiv.style.display = 'flex';
+        return;
+      }
+
+      btn.textContent = '로그인 중...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const result = Auth.login(student_id, password);
+        if (result.success) {
+          showToast('로그인 성공! 환영합니다.', 'success');
+          setTimeout(() => { window.location.href = 'pages/home.html'; }, 500);
+        } else {
+          errorMsg.textContent = result.error;
+          errorDiv.style.display = 'flex';
+          btn.textContent = '🔐 로그인';
+          btn.disabled = false;
+        }
+      }, 400);
+    });
+  </script>
+</body>
+
+</html>
