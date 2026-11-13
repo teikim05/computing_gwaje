@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>홈 - 강의실 대여 시스템</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="toast-container"></div>
+
+<div class="app-container">
+  <!-- ── 데스크탑 헤더 ── -->
+  <header class="desktop-header">
+    <div class="logo">🏛️ 강의실 <span>대여</span> 시스템</div>
+    <div class="header-right">
+      <div class="user-info">
+        👤 <span class="user-name-display"></span>
+        <span style="opacity:0.5">|</span>
+        <span class="user-role-display" style="color:var(--accent)"></span>
+      </div>
+      <button class="header-logout-btn logout-btn">로그아웃</button>
+    </div>
+  </header>
+
+  <!-- ── 데스크탑 사이드바 ── -->
+  <aside class="desktop-sidebar">
+    <div style="padding:20px 24px;margin-bottom:8px;">
+      <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;">
+        <div style="font-size:var(--font-sm);color:rgba(255,255,255,0.6);margin-bottom:4px;">👤 <span class="user-id-display"></span></div>
+        <div style="font-size:var(--font-lg);font-weight:700;color:white;" class="user-name-display"></div>
+        <div style="font-size:var(--font-xs);color:var(--accent);font-weight:600;" class="user-role-display"></div>
+      </div>
+    </div>
+    <div class="sidebar-label">메뉴</div>
+    <ul class="sidebar-nav">
+      <li><a href="home.html" data-page="home"><span class="nav-icon">🏠</span> 홈</a></li>
+      <li><a href="rooms.html" data-page="rooms"><span class="nav-icon">🚪</span> 강의실 목록</a></li>
+      <li><a href="my-reservations.html" data-page="my"><span class="nav-icon">📋</span> 내 예약</a></li>
+      <li><a href="profile.html" data-page="profile"><span class="nav-icon">👤</span> 내 정보</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label admin-only">관리자</div>
+    <ul class="sidebar-nav admin-only">
+      <li><a href="admin.html" data-page="admin"><span class="nav-icon">🛠️</span> 관리자 페이지</a></li>
+    </ul>
+    <div style="margin-top:auto;padding:20px 12px 0;">
+      <button class="logout-btn" style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:var(--font-sm);width:100%;background:none;border:none;cursor:pointer;">
+        <span>🚪</span> 로그아웃
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── 모바일 헤더 ── -->
+  <header class="mobile-header">
+    <div class="logo">🏛️ 강의실 <span>대여</span></div>
+    <div class="header-actions">
+      <span class="user-badge user-name-display"></span>
+      <button class="header-logout-btn logout-btn">로그아웃</button>
+    </div>
+  </header>
+
+  <!-- ── 메인 콘텐츠 ── -->
+  <main class="main-content">
+    <div class="page-title">안녕하세요 👋</div>
+    <div class="page-subtitle" id="greeting-sub">강의실을 예약하고 편리하게 이용하세요.</div>
+
+    <!-- 현재 예약 -->
+    <div id="current-reservation" style="display:none; margin-bottom:24px;">
+      <div class="section-header">
+        <span class="section-title">📌 현재 예약</span>
+      </div>
+      <div id="current-reservation-card" class="reservation-card in_use" style="border-left:4px solid var(--success);"></div>
+    </div>
+
+    <!-- 요약 카드 -->
+    <div class="summary-cards" id="summary-cards"></div>
+
+    <!-- 오늘의 강의실 현황 -->
+    <div class="section-header">
+      <span class="section-title">🚪 강의실 현황</span>
+      <a href="rooms.html" class="section-link">전체 보기 →</a>
+    </div>
+
+    <div id="room-status-list"></div>
+
+    <!-- 대여 절차 안내 -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3>📖 대여 방법</h3>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--font-sm);flex-shrink:0;">1</div>
+            <div>
+              <div style="font-weight:700;font-size:var(--font-md);">강의실 선택</div>
+              <div style="color:var(--text-sub);font-size:var(--font-sm);">목록에서 원하는 강의실을 선택하세요</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--font-sm);flex-shrink:0;">2</div>
+            <div>
+              <div style="font-weight:700;font-size:var(--font-md);">시간대 선택</div>
+              <div style="color:var(--text-sub);font-size:var(--font-sm);">30분 단위로 원하는 시간을 선택하세요</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--font-sm);flex-shrink:0;">3</div>
+            <div>
+              <div style="font-weight:700;font-size:var(--font-md);">사용 목적 / 악기 선택</div>
+              <div style="color:var(--text-sub);font-size:var(--font-sm);">목적과 악기 사용 여부를 선택하세요</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--primary-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:var(--font-sm);flex-shrink:0;">4</div>
+            <div>
+              <div style="font-weight:700;font-size:var(--font-md);">강의실 이용</div>
+              <div style="color:var(--text-sub);font-size:var(--font-sm);">승인 후 해당 시간에 강의실을 이용하세요</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning mt-4">
+          <span class="alert-icon">⚠️</span>
+          <span>무단으로 강의실을 사용 중인 사람이 있을 경우, 정식 예약자는 해당 사람을 퇴실 요청할 권리가 있습니다.</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── 모바일 하단 네비게이션 ── -->
+  <nav class="bottom-nav">
+    <a href="home.html" data-page="home">
+      <span class="nav-icon">🏠</span>
+      <span>홈</span>
+    </a>
+    <a href="rooms.html" data-page="rooms">
+      <span class="nav-icon">🚪</span>
+      <span>강의실</span>
+    </a>
+    <a href="my-reservations.html" data-page="my">
+      <span class="nav-icon">📋</span>
+      <span>내 예약</span>
+    </a>
+    <a href="profile.html" data-page="profile">
+      <span class="nav-icon">👤</span>
+      <span>내 정보</span>
+    </a>
+  </nav>
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+if (!initPage('home')) { /* redirect */ }
+
+const user = Session.currentUser;
+
+// 인사말 업데이트
+document.getElementById('greeting-sub').textContent =
+  `${maskName(user.name)} 님, 오늘도 좋은 하루 되세요!`;
+
+// 현재 예약 표시
+const activeRv = Reservation.getActiveReservation(user.id);
+if (activeRv) {
+  const rvDiv = document.getElementById('current-reservation');
+  const rvCard = document.getElementById('current-reservation-card');
+  const room = Room.getById(activeRv.room_id);
+  const statusLabels = { reserved: '예약 완료', in_use: '사용 중', pending: '승인 대기' };
+    const statusBadgeClass = activeRv.status === 'in_use' ? 'status-available' : (activeRv.status === 'pending' ? 'approval-required' : 'status-available');
+    rvDiv.style.display = 'block';
+    rvCard.innerHTML = `
+      <div class="reservation-room">${room ? room.icon + ' ' + room.room_name : '강의실'}</div>
+      <div class="reservation-time">📅 ${formatDatetime(activeRv.start_time)} ~ ${formatTime(activeRv.end_time)}</div>
+      <div class="reservation-meta">
+        <span class="${statusBadgeClass}">
+          ● ${statusLabels[activeRv.status] || activeRv.status}
+        </span>
+        <a href="my-reservations.html" class="btn btn-sm btn-ghost" style="border:1px solid var(--border);">내 예약 상세 보기 →</a>
+      </div>
+    `;
+}
+
+// 요약 카드
+const allRooms = Room.getAll();
+const availableCount = allRooms.filter(r => Room.getCurrentStatus(r.room_id) === 'available').length;
+const rentedCount = allRooms.filter(r => Room.getCurrentStatus(r.room_id) === 'rented').length;
+const myRvCount = DB.reservations.filter(r => r.user_id === user.id && ['reserved','pending'].includes(r.status)).length;
+const pendingCount = DB.reservations.filter(r => r.status === 'pending').length;
+
+document.getElementById('summary-cards').innerHTML = `
+  <div class="summary-card">
+    <div class="sc-label">대여 가능</div>
+    <div class="sc-value" style="color:var(--success)">${availableCount}</div>
+    <div class="sc-icon">🟢</div>
+  </div>
+  <div class="summary-card">
+    <div class="sc-label">대여 중</div>
+    <div class="sc-value" style="color:var(--danger)">${rentedCount}</div>
+    <div class="sc-icon">🔴</div>
+  </div>
+  <div class="summary-card">
+    <div class="sc-label">내 예약</div>
+    <div class="sc-value">${myRvCount}</div>
+    <div class="sc-icon">📋</div>
+  </div>
+  <div class="summary-card admin-only">
+    <div class="sc-label">승인 대기</div>
+    <div class="sc-value" style="color:var(--warning)">${pendingCount}</div>
+    <div class="sc-icon">⏳</div>
+  </div>
+`;
+
+// 강의실 현황 (처음 5개)
+const roomList = document.getElementById('room-status-list');
+const previewRooms = allRooms.filter(r => r.is_active).slice(0, 5);
+roomList.innerHTML = previewRooms.map(room => {
+  const status = Room.getCurrentStatus(room.room_id);
+  return `
+    <div class="room-card" onclick="location.href='room-detail.html?id=${room.room_id}'">
+      <div class="room-card-inner">
+        <div class="room-icon">${room.icon}</div>
+        <div class="room-info">
+          <div class="room-name">${room.room_name}</div>
+          <div class="room-floor">${room.location}</div>
+          <span class="status-badge status-${status}">${Room.getStatusLabel(status)}</span>
+          ${room.requires_approval ? '<span class="approval-required" style="margin-left:6px">🔑 승인 필요</span>' : ''}
+        </div>
+        <span class="room-arrow">›</span>
+      </div>
+    </div>
+  `;
+}).join('');
+</script>
+</body>
+</html>
+
